@@ -6,9 +6,9 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 class DefaultResponse<T>(
-    val code: String,
-    val message: String,
-    val timestamp: Long = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli(),
+    override val code: String,
+    override val message: String,
+    override val timestamp: Long = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli(),
     val data: T
 ) : IResponse, Serializable {
     companion object {

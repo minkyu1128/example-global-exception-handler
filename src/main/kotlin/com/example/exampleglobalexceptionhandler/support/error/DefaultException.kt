@@ -1,6 +1,15 @@
 package com.example.exampleglobalexceptionhandler.support.error
 
-open class DefaultException(error: IError) : RuntimeException(error.getMessage()) {
-    var error: IError? = error
+
+open class DefaultException : RuntimeException {
+    var error: IError
+
+    constructor(error: IError) : super(error.getMessage()) {
+        this.error = error
+    }
+
+    constructor(error: IError, cause: Throwable) : super(error.getMessage(), cause) {
+        this.error = error
+    }
 
 }

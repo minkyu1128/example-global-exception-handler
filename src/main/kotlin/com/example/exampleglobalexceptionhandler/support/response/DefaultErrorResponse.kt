@@ -1,31 +1,42 @@
 package com.example.exampleglobalexceptionhandler.support.response
 
 import com.example.exampleglobalexceptionhandler.support.error.IError
+import com.fasterxml.jackson.annotation.JsonInclude
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.io.Serializable
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class DefaultErrorResponse(
-    val code: String,
-    val message: String,
-    val timestamp: Long = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli(),
+    override val code: String,
+    override val message: String,
+    override val timestamp: Long = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli(),
+    val errors: List<String>? = null
 ) : IResponse, Serializable {
     companion object {
         fun of(error: IError): ResponseEntity<DefaultErrorResponse> {
-            return ResponseEntity
-                .status(error.status().value())
-                .body(toResponse(error))
+            return of(error.status(), error.getCode(), error.getMessage(), null)
         }
 
-        fun of(status: HttpStatus, code: String, message: String): ResponseEntity<DefaultErrorResponse> {
+        fun ofValidate(error: IError, errors: List<String>): ResponseEntity<DefaultErrorResponse> {
+            return of(error.status(), error.getCode(), error.getMessage(), errors)
+        }
+
+        fun of(
+            status: HttpStatus,
+            code: String,
+            message: String,
+            errors: List<String>?
+        ): ResponseEntity<DefaultErrorResponse> {
             return ResponseEntity
                 .status(status.value())
                 .body(
                     DefaultErrorResponse(
                         code = code,
-                        message = message
+                        message = message,
+                        errors = errors
                     )
                 )
         }
