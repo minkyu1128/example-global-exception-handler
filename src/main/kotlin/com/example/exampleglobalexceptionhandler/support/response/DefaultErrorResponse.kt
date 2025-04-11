@@ -1,5 +1,6 @@
 package com.example.exampleglobalexceptionhandler.support.response
 
+import com.example.exampleglobalexceptionhandler.support.error.DefaultError
 import com.example.exampleglobalexceptionhandler.support.error.IError
 import com.fasterxml.jackson.annotation.JsonInclude
 import org.springframework.http.HttpStatus
@@ -20,7 +21,7 @@ class DefaultErrorResponse(
             return of(error.status(), error.getCode(), error.getMessage(), null)
         }
 
-        fun ofValidate(error: IError, errors: List<String>): ResponseEntity<DefaultErrorResponse> {
+        fun ofValidate(error: DefaultError, errors: List<String>): ResponseEntity<DefaultErrorResponse> {
             return of(error.status(), error.getCode(), error.getMessage(), errors)
         }
 
