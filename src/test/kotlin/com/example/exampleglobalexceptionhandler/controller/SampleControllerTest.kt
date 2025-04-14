@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -25,12 +26,9 @@ class SampleControllerTest {
     private lateinit var mockMvc: MockMvc
 
     @Test
-    fun `데이터 목록 조회 - 전체 데이터 조회를 요청하는 경우 예외 반환 404 Not Found`() {
+    fun `데이터 목록 조회 - 전체 데이터 조회를 요청하하면 목록 200 OK`() {
         mockMvc.perform(get("/api/datas"))
-            .andExpect(status().isNotFound) // SampleError에 맞춰서 NOT_FOUND로 매핑되었다고 가정
-            .andExpect(jsonPath("$.code").value(SampleError.REGISTERED_DATA_NOT_FOUND.getCode()))
-            .andExpect(jsonPath("$.message").value(SampleError.REGISTERED_DATA_NOT_FOUND.getMessage()))
-            .andDo(print())
+            .andExpect(status().isOk)
     }
 
     @Test
@@ -60,6 +58,7 @@ class SampleControllerTest {
             status { isOk() }
             jsonPath("$.code") { value("OK") }
         }
+            .andDo { print() }
     }
 
     @Test
@@ -76,6 +75,7 @@ class SampleControllerTest {
             jsonPath("$.code") { value("INVALID_FIELDS") } // 예시
             jsonPath("$.message") { exists() }
         }
+            .andDo { print() }
     }
 
     @Test
@@ -92,6 +92,7 @@ class SampleControllerTest {
             status { isBadRequest() }
             jsonPath("$.code") { value("INVALID_FIELDS") }
         }
+            .andDo { print() }
     }
 
     @Test
@@ -108,6 +109,25 @@ class SampleControllerTest {
             status { isBadRequest() }
             jsonPath("$.code") { value("INVALID_FIELDS") }
         }
+            .andDo { print() }
+    }
+
+    @Test
+    fun `데이터 수정 - 등록된 데이터가 없어 404 Not Found`() {
+        val request = mapOf(
+            "title" to "제목 입니다아",
+            "description" to "설명입니다아아아아아"
+        )
+
+        mockMvc.put("/api/datas/12") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(request)
+        }
+            .andExpect {
+                status { isNotFound() }
+                jsonPath("$.code") { value("REGISTERED_DATA_NOT_FOUND") }
+            }
+            .andDo { print() }
     }
 
 }

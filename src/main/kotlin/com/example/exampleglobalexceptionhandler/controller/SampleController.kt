@@ -12,14 +12,12 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api")
 class SampleController {
     @GetMapping("/datas")
-    fun datas(): ResponseEntity<DefaultResponse<List<String>>> {
-//        throw DefaultException(error = SampleError.REGISTERED_DATA_NOT_FOUND)
-        throw SampleException(SampleError.REGISTERED_DATA_NOT_FOUND)
+    fun getDatas(): ResponseEntity<DefaultResponse<List<String>>> {
         return DefaultResponse.of(data = listOf("Hello World"))
     }
 
     @GetMapping("/datas/{id}")
-    fun data(@PathVariable id: String): ResponseEntity<DefaultResponse<Map<String, String>>> {
+    fun getData(@PathVariable id: String): ResponseEntity<DefaultResponse<Map<String, String>>> {
         return DefaultResponse.of(
             data = mapOf(
                 "id" to id,
@@ -30,7 +28,13 @@ class SampleController {
     }
 
     @PostMapping("/datas")
-    fun data(@Valid @RequestBody request: SampleRequest): ResponseEntity<DefaultResponse<Unit>> {
+    fun postData(@Valid @RequestBody request: SampleRequest): ResponseEntity<DefaultResponse<Unit>> {
+        return DefaultResponse.ok()
+    }
+
+    @PutMapping("/datas/{id}")
+    fun putData(@PathVariable id: String, @Valid @RequestBody request: SampleRequest): ResponseEntity<DefaultResponse<Unit>> {
+        throw SampleException(SampleError.REGISTERED_DATA_NOT_FOUND)
         return DefaultResponse.ok()
     }
 }
